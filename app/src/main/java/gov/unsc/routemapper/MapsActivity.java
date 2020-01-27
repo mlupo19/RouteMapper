@@ -3,11 +3,18 @@ package gov.unsc.routemapper;
 import androidx.fragment.app.FragmentActivity;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,17 +22,26 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Button startButton;
     private Button turnButton;
+    private TextView distView;
 
     private FusedLocationProviderClient fusedLocationClient;
 
+    private ArrayList<LatLng> markers = new ArrayList<>();
+    private ArrayList<LatLng> points = new ArrayList<>();
+
     private boolean onRoute = false;
+    private float dist = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         startButton = findViewById(R.id.startButton);
         turnButton = findViewById(R.id.makeTurnButton);
+        distView = findViewById(R.id.distLabel);
     }
 
     public void startButton(View v) {
@@ -52,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startButton.setText("End Route");
             turnButton.setVisibility(View.VISIBLE);
             onRoute = true;
+            makeTurn(v);
         }
     }
 
@@ -60,6 +78,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void makeTurn(View v) {
+        markers.add(points.get(points.size() - 1));
+        LatLng loc = markers.get(markers.size() - 1);
+        mMap.addMarker(new MarkerOptions().position(loc));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(200 + (dist * 10)));
+        if (markers.size() > 1) {
+            dist += Place.dist(markers.get(markers.size() - 2), markers.get(markers.size() - 1));
+            PolylineOptions pol = new PolylineOptions();
+            pol.add(markers.get(markers.size() - 2));
+            pol.add(markers.get(markers.size() - 1));
+            mMap.addPolyline(pol);
+        }
+        distView.setText("Distance: " + dist);
 
     }
 
@@ -77,18 +108,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        System.out.println("less yeet");
-                        if (location != null) {
-                            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(loc));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-                            System.out.println("yeet");
-                        }
-                    }
-                });
+        LocationRequest r = new LocationRequest();
+        r.setInterval(10);
+        fusedLocationClient.requestLocationUpdates(r, new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                List<Location> locations = locationResult.getLocations();
+                if (locations.size() > 0) {
+                    Location location = locations.get(locations.size() - 1);
+                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                    points.add(loc);
+                }
+            }
+        }, Looper.myLooper());
     }
 }
