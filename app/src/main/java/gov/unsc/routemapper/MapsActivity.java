@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,10 +39,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationClient;
 
     private ArrayList<LatLng> markers = new ArrayList<>();
-    private ArrayList<LatLng> points = new ArrayList<>();
 
     private boolean onRoute = false;
     private float dist = 0;
+    private boolean nanners = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,20 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void makeTurn(View v) {
-        markers.add(points.get(points.size() - 1));
-        LatLng loc = markers.get(markers.size() - 1);
-        mMap.addMarker(new MarkerOptions().position(loc));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(200 + (dist * 10)));
-        if (markers.size() > 1) {
-            dist += Place.dist(markers.get(markers.size() - 2), markers.get(markers.size() - 1));
-            PolylineOptions pol = new PolylineOptions();
-            pol.add(markers.get(markers.size() - 2));
-            pol.add(markers.get(markers.size() - 1));
-            mMap.addPolyline(pol);
-        }
-        distView.setText("Distance: " + dist);
-
+        nanners = true;
     }
 
 
@@ -117,7 +105,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (locations.size() > 0) {
                     Location location = locations.get(locations.size() - 1);
                     LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-                    points.add(loc);
+                    Log.i("nanners", "nanners");
+
+                    if (nanners) {
+                        markers.add(loc);
+                        mMap.addMarker(new MarkerOptions().position(loc));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(200 + (dist * 10)));
+                        if (markers.size() > 1) {
+                            dist += Place.dist(markers.get(markers.size() - 2), markers.get(markers.size() - 1));
+                            PolylineOptions pol = new PolylineOptions();
+                            pol.add(markers.get(markers.size() - 2));
+                            pol.add(markers.get(markers.size() - 1));
+                            mMap.addPolyline(pol);
+                        }
+                        distView.setText("Distance: " + dist);
+                    }
                 }
             }
         }, Looper.myLooper());
