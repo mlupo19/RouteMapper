@@ -2,18 +2,30 @@ package gov.unsc.routemapper;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private Button startButton;
+    private Button turnButton;
+
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private boolean onRoute = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +35,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        startButton = findViewById(R.id.startButton);
+        turnButton = findViewById(R.id.makeTurnButton);
+    }
+
+    public void startButton(View v) {
+        if (onRoute) {
+            startButton.setText("Start Route");
+            finishRoute();
+            turnButton.setVisibility(View.INVISIBLE);
+            onRoute = false;
+        } else {
+            startButton.setText("End Route");
+            turnButton.setVisibility(View.VISIBLE);
+            onRoute = true;
+        }
+    }
+
+    private void finishRoute() {
+
+    }
+
+    public void makeTurn(View v) {
+
     }
 
 
@@ -39,9 +77,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        System.out.println("less yeet");
+                        if (location != null) {
+                            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(loc));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+                            System.out.println("yeet");
+                        }
+                    }
+                });
     }
 }
