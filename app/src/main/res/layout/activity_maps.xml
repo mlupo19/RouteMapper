@@ -37,6 +37,7 @@
         android:onClick="startButton"
         android:text="Start Route"
         map:layout_constraintEnd_toStartOf="@id/makeTurnButton"
+        map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent" />
 
@@ -45,13 +46,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:onClick="makeTurn"
         android:text="Make Turn"
-        android:visibility="invisible"
-        map:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        map:layout_constraintEnd_toStartOf="@id/undoButton"
         map:layout_constraintStart_toEndOf="@id/startButton"
+        map:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/undoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:onClick="undo"
+        android:text="Undo"
+        android:visibility="gone"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toEndOf="@+id/makeTurnButton"
         map:layout_constraintTop_toTopOf="parent" />
 
     <TextView
