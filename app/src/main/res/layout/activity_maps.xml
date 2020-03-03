@@ -31,13 +31,11 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:onClick="startButton"
         android:text="Start Route"
-        map:layout_constraintEnd_toStartOf="@id/makeTurnButton"
         map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintEnd_toStartOf="@id/makeTurnButton"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent" />
 

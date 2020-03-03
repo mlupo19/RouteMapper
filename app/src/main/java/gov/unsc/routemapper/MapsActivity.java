@@ -26,7 +26,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +63,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean startOfNanners = false;
     private boolean init = true;
     private int turnCount = 0;
+    private File file;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
+    private HashMap<String, Boolean> achievements;
 
     /*
         This app works by pressing the start route button, which places a marker at your starting position and the turn and undo buttons become available.
@@ -83,6 +96,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         turnButton = findViewById(R.id.makeTurnButton);
         undoButton = findViewById(R.id.undoButton);
         distView = findViewById(R.id.distLabel);
+
+        file = new File("achievements");
+        boolean exists = file.exists();
+        if (!exists) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(file));
+            ois = new ObjectInputStream(new FileInputStream(file));
+            if (exists)
+                loadAchievements();
+            else
+                createAchievements();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createAchievements() throws IOException {
+        achievements = new HashMap<>();
+        oos.writeObject(achievements);
+    }
+
+    private void loadAchievements() throws IOException, ClassNotFoundException {
+        achievements = (HashMap<String, Boolean>) ois.readObject();
+        
     }
 
     public void startButton(View v) {
@@ -195,4 +238,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            oos.close();
+            ois.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
