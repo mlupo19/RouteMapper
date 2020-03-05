@@ -6,7 +6,9 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
@@ -66,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private File file;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-    private HashMap<String, Boolean> achievements;
+    private HashMap<String, Achievement> achievements;
 
     /*
         This app works by pressing the start route button, which places a marker at your starting position and the turn and undo buttons become available.
@@ -120,12 +122,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createAchievements() throws IOException {
         achievements = new HashMap<>();
+        achievements.put("5mi", new Achievement("Walk 5 miles", R.drawable.five));
         oos.writeObject(achievements);
     }
 
     private void loadAchievements() throws IOException, ClassNotFoundException {
-        achievements = (HashMap<String, Boolean>) ois.readObject();
-        
+        achievements = (HashMap<String, Achievement>) ois.readObject();
     }
 
     public void startButton(View v) {
