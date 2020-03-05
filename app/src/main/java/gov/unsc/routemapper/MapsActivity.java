@@ -71,6 +71,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private HashMap<String, Achievement> achievements;
 
     /*
+     Todo:
+      - Make a button to open the list of achievements
+      - Load the achievement info to the UI list
+      -
+     */
+
+    /*
         This app works by pressing the start route button, which places a marker at your starting position and the turn and undo buttons become available.
         When you want to make a turn, press the turn button and a marker and line will be drawn.  To see labels of any marker, click on it.
         The bottom shows the total distance travelled on the route.  To end your trip, press the end route button which adds the final marker and you can see your route, markers, and distance.
@@ -123,6 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void createAchievements() throws IOException {
         achievements = new HashMap<>();
         achievements.put("5mi", new Achievement("Walk 5 miles", R.drawable.five));
+        achievements.put("2mi", new Achievement("Walk 2 miles", R.drawable.two));
         oos.writeObject(achievements);
     }
 

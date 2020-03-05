@@ -1,8 +1,5 @@
 package gov.unsc.routemapper;
 
-import android.graphics.Bitmap;
-import android.media.Image;
-
 import java.io.Serializable;
 
 public class Achievement implements Serializable {
@@ -11,7 +8,7 @@ public class Achievement implements Serializable {
     private String name;
     private int image;
 
-    public Achievement(String name, int image) {
+    Achievement(String name, int image) {
         this.name = name;
         this.image = image;
     }
