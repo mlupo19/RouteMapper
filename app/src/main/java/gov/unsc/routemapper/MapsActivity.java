@@ -74,8 +74,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*
      Todo:
-      - Make a button to open the list of achievements
-      - Load the achievement info to the UI list
+      - Load the achievement info to the two lists, one for the pictures, one for the names of the achievements
+      - make images for achievements and import to project, and update achievements to use new images
+      - finish file persistence
       - Write comment
      */
 
@@ -131,8 +132,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createAchievements() throws IOException {
         achievements = new HashMap<>();
-        achievements.put("5mi", new Achievement("Walk 5 miles", R.drawable.five));
-        achievements.put("2mi", new Achievement("Walk 2 miles", R.drawable.two));
+        achievements.put("5km", new Achievement("Walk 5 kilometers", R.drawable.five));
+        achievements.put("2km", new Achievement("Walk 2 kilometers", R.drawable.two));
         oos.writeObject(achievements);
     }
 
@@ -150,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             turnCount = 0;
 
             //debug
-            Objects.requireNonNull(achievements.get("2mi")).achieve();
+            Objects.requireNonNull(achievements.get("2km")).achieve();
 
         } else {
             dist = 0;
@@ -244,6 +245,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (!onRoute)
             markers.clear();
+
+
     }
 
     public void undo(View v) {
@@ -268,6 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void achieveClick(View view) {
         Intent toAchievementList = new Intent(this, AchievementActivity.class);
+        toAchievementList.putExtra("achieves", achievements);
         startActivity(toAchievementList);
     }
 }
