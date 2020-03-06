@@ -8,10 +8,10 @@
 
     <LinearLayout
         android:id="@+id/nameList"
-        android:layout_width="200dp"
+        android:layout_width="125dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/valueList"
         app:layout_constraintStart_toEndOf="@+id/pictureList"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -19,7 +19,7 @@
 
     <LinearLayout
         android:id="@+id/pictureList"
-        android:layout_width="200dp"
+        android:layout_width="125dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/nameList"
@@ -27,4 +27,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/valueList"
+        android:layout_width="125dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/nameList"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

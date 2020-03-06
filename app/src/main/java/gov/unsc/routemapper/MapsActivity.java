@@ -110,7 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         distView = findViewById(R.id.distLabel);
 
         file = new File("achievements");
-        boolean exists = file.exists();
+        boolean exists = false;
         if (!exists) {
             try {
                 file.createNewFile();
@@ -139,6 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         achievements.put("5mk", new Achievement("Place five markers in a run", R.drawable.five));
         achievements.put("10mk", new Achievement("Place ten markers in a run", R.drawable.five));
         oos.writeObject(achievements);
+        oos.flush();
     }
 
     private void loadAchievements() throws IOException, ClassNotFoundException {
@@ -298,6 +299,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void achieveClick(View view) {
         Intent toAchievementList = new Intent(this, AchievementActivity.class);
         toAchievementList.putExtra("achieves", achievements);
+        if (achievements == null)
+            System.out.println("Bruh");
+        else
         startActivity(toAchievementList);
     }
 }
