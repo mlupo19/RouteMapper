@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -74,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      Todo:
       - Make a button to open the list of achievements
       - Load the achievement info to the UI list
-      -
+      - Write comment
      */
 
     /*
@@ -146,6 +148,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             undoButton.setVisibility(View.GONE);
             onRoute = false;
             turnCount = 0;
+
+            //debug
+            Objects.requireNonNull(achievements.get("2mi")).achieve();
+
         } else {
             dist = 0;
             startButton.setText("End Route");
@@ -258,5 +264,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
+    }
+
+    public void achieveClick(View view) {
+        Intent toAchievementList = new Intent(this, AchievementActivity.class);
+        startActivity(toAchievementList);
     }
 }
