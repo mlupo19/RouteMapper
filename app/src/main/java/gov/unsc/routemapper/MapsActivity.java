@@ -132,8 +132,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createAchievements() throws IOException {
         achievements = new HashMap<>();
-        achievements.put("5km", new Achievement("Walk 5 kilometers", R.drawable.five));
-        achievements.put("2km", new Achievement("Walk 2 kilometers", R.drawable.two));
+        achievements.put("5km", new Achievement("Walk 5 kilometers in one trip", R.drawable.five));
+        achievements.put("2km", new Achievement("Walk 2 kilometers in one trip", R.drawable.two));
+        achievements.put("10km", new Achievement("Walk 10 kilometers in one trip", R.drawable.five));
+        achievements.put("1mk", new Achievement("Place one marker in a run", R.drawable.five));
+        achievements.put("5mk", new Achievement("Place five markers in a run", R.drawable.five));
+        achievements.put("10mk", new Achievement("Place ten markers in a run", R.drawable.five));
         oos.writeObject(achievements);
     }
 
@@ -245,8 +249,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (!onRoute)
             markers.clear();
-
-
+        if (dist >= 2000)
+        {
+            achievements.get("2km").achieve();
+        }
+        if (dist >= 5000)
+        {
+            achievements.get("5km").achieve();
+        }
+        if (dist >= 10000)
+        {
+            achievements.get("10km").achieve();
+        }
+        if (turnCount >= 1)
+        {
+            achievements.get("1mk").achieve();
+        }
+        if (turnCount >= 5)
+        {
+            achievements.get("5mk").achieve();
+        }
+        if (turnCount >= 10)
+        {
+            achievements.get("10mk").achieve();
+        }
     }
 
     public void undo(View v) {
