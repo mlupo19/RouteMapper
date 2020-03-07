@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -109,28 +110,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         undoButton = findViewById(R.id.undoButton);
         distView = findViewById(R.id.distLabel);
 
-        file = new File("achievements");
-        boolean exists = false;
-        if (!exists) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        file = new File(getFilesDir(), "achievements");
+        System.out.println(file.getName());
+        System.out.println(file.getAbsolutePath());
         try {
-            oos = new ObjectOutputStream(new FileOutputStream(file));
-            ois = new ObjectInputStream(new FileInputStream(file));
-            if (exists)
-                loadAchievements();
-            else
-                createAchievements();
-        } catch (IOException | ClassNotFoundException e) {
+            oos = new ObjectOutputStream(openFileOutput(file.getName(), Context.MODE_PRIVATE));
+            ois = new ObjectInputStream(openFileInput(file.getName()));
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        loadAchievements();
     }
 
-    private void createAchievements() throws IOException {
+    private void createAchievements()  {
         achievements = new HashMap<>();
         achievements.put("5km", new Achievement("Walk 5 kilometers in one trip", R.drawable.five));
         achievements.put("2km", new Achievement("Walk 2 kilometers in one trip", R.drawable.two));
@@ -138,12 +130,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         achievements.put("1mk", new Achievement("Place one marker in a run", R.drawable.five));
         achievements.put("5mk", new Achievement("Place five markers in a run", R.drawable.five));
         achievements.put("10mk", new Achievement("Place ten markers in a run", R.drawable.five));
-        oos.writeObject(achievements);
-        oos.flush();
+        try {
+            oos.writeObject(achievements);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadAchievements() throws IOException, ClassNotFoundException {
-        achievements = (HashMap<String, Achievement>) ois.readObject();
+    private void loadAchievements() {
+        try {
+            achievements = (HashMap<String, Achievement>) ois.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        if (achievements == null)
+            createAchievements();
+        System.out.println(achievements.values());
     }
 
     public void startButton(View v) {
@@ -288,6 +291,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onDestroy() {
         super.onDestroy();
         try {
+            oos.reset();
+            oos.writeObject(achievements);
+            oos.flush();
             oos.close();
             ois.close();
         } catch (IOException e) {
@@ -302,6 +308,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (achievements == null)
             System.out.println("Bruh");
         else
-        startActivity(toAchievementList);
+            startActivity(toAchievementList);
     }
 }

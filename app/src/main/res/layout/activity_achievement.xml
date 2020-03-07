@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:id="@+id/nameList"
-        android:layout_width="125dp"
+        android:layout_width="175dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/valueList"
@@ -30,7 +30,7 @@
 
     <LinearLayout
         android:id="@+id/valueList"
-        android:layout_width="125dp"
+        android:layout_width="75dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"

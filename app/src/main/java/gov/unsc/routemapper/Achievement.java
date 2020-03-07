@@ -28,4 +28,8 @@ public class Achievement implements Serializable {
     public int getImage() {
         return image;
     }
+
+    public String toString() {
+        return name;
+    }
 }
