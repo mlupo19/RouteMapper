@@ -68,17 +68,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean startOfNanners = false;
     private boolean init = true;
     private int turnCount = 0;
-    private File file;
-    private ObjectOutputStream oos;
-    private ObjectInputStream ois;
     private HashMap<String, Achievement> achievements;
+    private File file;
 
     /*
-     Todo:
-      - Load the achievement info to the two lists, one for the pictures, one for the names of the achievements
-      - make images for achievements and import to project, and update achievements to use new images
-      - finish file persistence
-      - Write comment
+        Achievements:
+        Achievements are stored in a hashmap with a code, and when an achievement condition is met, the achievement is accessed through its code and updated to show the user got the achievement.
+        For data persistence, the hashmap of achievements is stored in a file on the internal storage of the phone.  Every time the activity is paused, the achievement file is saved.
+        When the app updates, it checks all the conditions for achievements and updates the achievements accordingly.
+        To view achievements, another activity was added and is accessed through the achievements button on the main activity.
+        3 linear layouts are used to display the names of the achievements, the icons of the achievements, and the radiobuttons that show whether it has been achieved yet.
+        The textviews, imageviews, and radiobuttons are all added programmatically
+
+        Known bugs: on some devices, the achievements names and images may become unaligned
      */
 
     /*
@@ -110,37 +112,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         undoButton = findViewById(R.id.undoButton);
         distView = findViewById(R.id.distLabel);
 
-        file = new File(getFilesDir(), "achievements");
-        System.out.println(file.getName());
-        System.out.println(file.getAbsolutePath());
+        file = new File(getFilesDir(), "achievements.obj");
+        loadAchievements();
+    }
+
+    private void write() {
         try {
-            oos = new ObjectOutputStream(openFileOutput(file.getName(), Context.MODE_PRIVATE));
-            ois = new ObjectInputStream(openFileInput(file.getName()));
+            ObjectOutputStream oos = new ObjectOutputStream(openFileOutput(file.getName(), Context.MODE_PRIVATE));
+            oos.writeObject(achievements);
+            oos.flush();
+            oos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        loadAchievements();
     }
 
     private void createAchievements()  {
         achievements = new HashMap<>();
-        achievements.put("5km", new Achievement("Walk 5 kilometers in one trip", R.drawable.five));
-        achievements.put("2km", new Achievement("Walk 2 kilometers in one trip", R.drawable.two));
-        achievements.put("10km", new Achievement("Walk 10 kilometers in one trip", R.drawable.five));
-        achievements.put("1mk", new Achievement("Place one marker in a run", R.drawable.five));
-        achievements.put("5mk", new Achievement("Place five markers in a run", R.drawable.five));
-        achievements.put("10mk", new Achievement("Place ten markers in a run", R.drawable.five));
-        try {
-            oos.writeObject(achievements);
-            oos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        achievements.put("5km", new Achievement("5k: Walk 5 kilometers in one trip", R.drawable.five));
+        achievements.put("2km", new Achievement("2k: Walk 2 kilometers in one trip", R.drawable.two));
+        achievements.put("10km", new Achievement("10k: Walk 10 kilometers in one trip", R.drawable.ten));
+        achievements.put("1mk", new Achievement("1 Marker: Place one marker in a run", R.drawable.one_mk));
+        achievements.put("5mk", new Achievement("5 Markers: Place five markers in a run", R.drawable.five_mk));
+        achievements.put("10mk", new Achievement("10 Markers: Place ten markers in a run", R.drawable.ten_mk));
+        write();
     }
 
     private void loadAchievements() {
         try {
+            ObjectInputStream ois = new ObjectInputStream(openFileInput(file.getName()));
+            System.out.println("why " + ois.available());
             achievements = (HashMap<String, Achievement>) ois.readObject();
+            ois.close();
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
@@ -157,9 +160,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             undoButton.setVisibility(View.GONE);
             onRoute = false;
             turnCount = 0;
-
-            //debug
-            Objects.requireNonNull(achievements.get("2km")).achieve();
 
         } else {
             dist = 0;
@@ -288,18 +288,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            oos.reset();
-            oos.writeObject(achievements);
-            oos.flush();
-            oos.close();
-            ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    protected void onPause() {
+        super.onPause();
+        write();
     }
 
     public void achieveClick(View view) {

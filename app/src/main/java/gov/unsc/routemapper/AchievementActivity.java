@@ -32,7 +32,7 @@ public class AchievementActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
             tv.setTextSize(14);
-            tv.setText("\n" + achievement.getName() + "\n");
+            tv.setText("\n" + achievement.getName());
             nLayout.addView(tv);
 
             ImageView iv = new ImageView(this);

@@ -79,11 +79,15 @@
         android:id="@+id/achieveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:onClick="achieveClick"
         android:text="Achievements"
+        android:textSize="10sp"
         map:layout_constraintBottom_toBottomOf="@id/distLabel"
-        map:layout_constraintEnd_toStartOf="@+id/distLabel" />
+        map:layout_constraintEnd_toStartOf="@+id/distLabel"
+        map:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
